@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angelina Zapototskaia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0e0e0e;
+      --surface: #161616;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --accent: #c8a97e;
+      --accent2: #7eafc8;
+      --text: #ede8e2;
+      --text-muted: #a8a29c;
+      --text-dim: #6a6460;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 400;
+      line-height: 1.75;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE TEXTURE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 1.2rem 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(14,14,14,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 8rem 6rem 4rem;
+      position: relative;
+      overflow: hidden;
+      gap: 4rem;
+    }
+
+    .hero-bg-line {
+      position: absolute;
+      top: 0;
+      right: 30%;
+      width: 1px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--border) 30%, var(--border) 70%, transparent);
+    }
+
+    .hero-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18rem;
+      font-weight: 300;
+      color: var(--text-dim);
+      position: absolute;
+      top: -2rem;
+      right: -1rem;
+      line-height: 1;
+      pointer-events: none;
+      opacity: 0.3;
+      z-index: 0;
+    }
+
+    .hero-content { position: relative; z-index: 1; }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.1s forwards;
+    }
+
+    .hero-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.25s forwards;
+    }
+
+    .hero-name em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 420px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.55s forwards;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.35rem 0.9rem;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 2px;
+    }
+
+    .tag.accent { border-color: var(--accent); color: var(--accent); }
+
+    .hero-links {
+      display: flex;
+      gap: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.7s forwards;
+    }
+
+    .btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.75rem 1.8rem;
+      border-radius: 2px;
+      transition: all 0.25s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+
+    .btn-primary:hover { background: #dbbf93; }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero-right {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      animation: fadeIn 1.2s 0.6s forwards;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .stat-box {
+      background: var(--surface);
+      padding: 2rem 1.8rem;
+    }
+
+    .stat-box:hover { background: var(--surface2); }
+
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hero-location {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .loc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent2);
+      box-shadow: 0 0 8px var(--accent2);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      padding: 7rem 6rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .section-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 300;
+      letter-spacing: -0.01em;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ─── EXPERIENCE ─── */
+    .exp-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 3rem;
+      padding: 3rem 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .exp-item:first-child { padding-top: 0; }
+    .exp-item:last-child { border-bottom: none; }
+
+    .exp-meta { padding-top: 0.2rem; }
+
+    .exp-period {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+
+    .exp-org {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .exp-role {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 400;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .exp-highlights {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .exp-highlights li {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      padding-left: 1.2rem;
+      position: relative;
+      line-height: 1.7;
+    }
+
+    .exp-highlights li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    /* ─── EDUCATION ─── */
+    .edu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .edu-card {
+      background: var(--surface);
+      padding: 2.5rem 2rem;
+      transition: background 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .edu-card:hover { background: var(--surface2); }
+
+    .edu-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+
+    .edu-card:hover::before { opacity: 1; }
+
+    .edu-year {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .edu-degree {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .edu-school {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .edu-detail {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      line-height: 1.6;
+      font-style: italic;
+    }
+
+    /* ─── SKILLS ─── */
+    .skills-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+    }
+
+    .skills-intro {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .skills-groups {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+    }
+
+    .skill-group-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .skill-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .pill {
+      font-size: 0.88rem;
+      padding: 0.45rem 1.1rem;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── CERTIFICATIONS ─── */
+    .certs-list {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .cert-item {
+      background: var(--surface);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+
+    .cert-item:hover { background: var(--surface2); }
+
+    .cert-icon {
+      font-size: 1.3rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .cert-name {
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .cert-issuer {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.63rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+
+    /* ─── LANGUAGES ─── */
+    .lang-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-width: 500px;
+    }
+
+    .lang-row { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .lang-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .lang-name {
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .lang-level {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+
+    .lang-track {
+      height: 2px;
+      background: var(--border);
+      width: 100%;
+    }
+
+    .lang-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--accent), var(--accent2));
+      transition: width 1s ease;
+    }
+
+    /* ─── EXTRAS ─── */
+    .extras-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .extra-box {
+      background: var(--surface);
+      padding: 2.5rem;
+    }
+
+    .extra-box-title {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .extra-box p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ─── PROJECTS ─── */
+    .projects-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .project-item {
+      padding: 2.8rem 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .project-item:first-child { padding-top: 0; }
+    .project-item:last-child { border-bottom: none; }
+
+    .project-left { padding-top: 0.15rem; }
+
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      line-height: 1.3;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .project-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: gap 0.2s;
+      margin-top: 0.8rem;
+    }
+
+    .project-link:hover { gap: 0.7rem; }
+
+    .project-link-secondary {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s, gap 0.2s;
+      margin-top: 0.4rem;
+    }
+
+    .project-link-secondary:hover { color: var(--accent); gap: 0.7rem; }
+
+    .project-right { }
+
+    .project-desc {
+      font-size: 0.93rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      margin-bottom: 1.2rem;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .project-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .project-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── CONTACT ─── */
+    #contact {
+      text-align: center;
+      padding: 7rem 6rem;
+    }
+
+    .contact-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      font-weight: 300;
+      margin-bottom: 1rem;
+    }
+
+    .contact-heading em { font-style: italic; color: var(--accent); }
+
+    .contact-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-decoration: none;
+      color: var(--text-muted);
+      padding: 0.8rem 1.8rem;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      transition: all 0.25s;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem 6rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-right a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-right a:hover { color: var(--accent); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* Fallback: if JS hasn't fired yet, don't hide content permanently */
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; }
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+
+      #hero {
+        grid-template-columns: 1fr;
+        padding: 7rem 2rem 4rem;
+        gap: 3rem;
+      }
+
+      .hero-number { font-size: 10rem; right: 0; }
+
+      section { padding: 5rem 2rem; }
+      footer { padding: 1.5rem 2rem; flex-direction: column; gap: 0.8rem; text-align: center; }
+
+      .exp-item { grid-template-columns: 1fr; gap: 1rem; }
+      .edu-grid { grid-template-columns: 1fr; }
+      .project-item { grid-template-columns: 1fr; gap: 1rem; }
+      .skills-layout { grid-template-columns: 1fr; gap: 2rem; }
+      .certs-list { grid-template-columns: 1fr; }
+      .extras-grid { grid-template-columns: 1fr; }
+      #contact { padding: 5rem 2rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ─── NAV ─── -->
+  <nav>
+    <a class="nav-logo" href="#hero">A.Z.</a>
+    <ul class="nav-links">
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-bg-line"></div>
+    <div class="hero-number">A</div>
+
+    <div class="hero-content">
+      <p class="hero-eyebrow">Business Analytics · Strategy · Data</p>
+
+      <h1 class="hero-name">
+        Angelina<br>
+        <em>Zapototskaia</em>
+      </h1>
+
+      <p class="hero-desc">
+        UCL MSc Business Analytics. I turn messy data into decisions — from federal grant proposals that scaled to 7,000 people, to causal inference models and marketing ROI analysis. I build things that actually get used.
+      </p>
+
+      <div class="hero-tags">
+        <span class="tag accent">UCL MSc 2025–26</span>
+        <span class="tag">Python · R · Power BI</span>
+      </div>
+
+      <div class="hero-links">
+        <a class="btn btn-primary" href="/cdn-cgi/l/email-protection#cbaaa5acaea7a2a5aab1fafafe8ba2a8a7a4beafe5a8a4a6">Get in Touch</a>
+        <a class="btn btn-outline" href="https://linkedin.com/in/zarazzap" target="_blank">LinkedIn</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-stats">
+        <div class="stat-box">
+          <div class="stat-num">7K+</div>
+          <div class="stat-label">Participants scaled</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">100%</div>
+          <div class="stat-label">Grant success rate</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">300+</div>
+          <div class="stat-label">Team members led</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">10K+</div>
+          <div class="stat-label">Annual participants</div>
+        </div>
+      </div>
+      <div class="hero-location">
+        <span class="loc-dot"></span>
+        London, UK · Open to opportunities
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EXPERIENCE ─── -->
+  <section id="experience">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Experience</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="exp-item reveal">
+      <div class="exp-meta">
+        <div class="exp-period">2021 – 2023</div>
+        <div class="exp-org">MGIMO University<br>Moscow, Russia</div>
+      </div>
+      <div class="exp-body">
+        <h3 class="exp-role">Project Manager & Coordinator</h3>
+        <ul class="exp-highlights">
+          <li>Scaled 6 flagship projects to over 7,000 participants by securing inclusion in Russia's national "Priority-2030" innovation programme through evidence-based proposals and federal approval.</li>
+          <li>Managed cross-functional teams of 300+ members and £30K+ budgets; designed operating models and KPIs later adopted organisation-wide.</li>
+          <li>Authored grant requests to Federal Agencies with a 100% success rate.</li>
+          <li>Produced data-driven reports (3–40 pages), dashboards, and briefings for senior management; built Excel models converting multi-thousand survey entries into quantitative metrics.</li>
+          <li>Led the largest educational model event in the CIS: 2,200 participants across 10 countries, including a state-accredited professional development programme.</li>
+          <li>Created international youth forums, business simulators, and financial literacy initiatives supported by Debevoise&Plimpton, EY, BCG, and government ministries — attracting 10K+ participants annually and still running.</li>
+          <li>Public speaking and event moderation for audiences of 2,000+, at national and international levels.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── EDUCATION ─── -->
+  <section id="education">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Education</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="edu-grid">
+      <div class="edu-card reveal">
+        <div class="edu-year">2025 – 2026</div>
+        <div class="edu-degree">MSc Business Analytics</div>
+        <div class="edu-school">University College London, UK</div>
+        <div class="edu-detail">Data Visualisation · Machine Learning · Strategy & Analytics</div>
+      </div>
+
+      <div class="edu-card reveal">
+        <div class="edu-year">2023 – 2025</div>
+        <div class="edu-degree">BA Business Management</div>
+        <div class="edu-school">University of East Anglia, UK</div>
+        <div class="edu-detail">Dissertation: "Financial Risk Mitigation for Strategic Project Management"</div>
+      </div>
+
+      <div class="edu-card reveal">
+        <div class="edu-year">2020 – 2023</div>
+        <div class="edu-degree">LLB International Law</div>
+        <div class="edu-school">Moscow State Institute of International Relations, Russia</div>
+        <div class="edu-detail">Anglo-Saxon Law · Civil Law · Financial Law</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROJECTS & RESEARCH ─── -->
+  <section id="projects">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">Projects & Research</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-list">
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Financial Risk Mitigation for Strategic Project Management</div>
+          <a class="project-link" href="Financial risks in SPM Dissertation.pdf" target="_blank">Read Dissertation →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Dissertation examining how organisations can identify and mitigate financial risks across complex, multi-stage projects. Developed a structured risk mitigation framework grounded in financial theory and applied to strategic project contexts, with practical recommendations for decision-makers managing large-scale initiatives under uncertainty.</p>
+          <div class="project-tags">
+            <span class="project-tag">Financial Risk</span>
+            <span class="project-tag">Strategy</span>
+            <span class="project-tag">Project Management</span>
+            <span class="project-tag">Research</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Marketing Analytics: Customer Segmentation & CLV Modelling</div>
+          <a class="project-link" href="marketing_analytics_clv.pdf" target="_blank">View Project →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Full-cycle marketing analytics project in R, covering market analysis, channel evaluation, and customer lifetime value modelling. Compared acquisition channels by cost-efficiency, built behavioural customer segments, and computed 24-month CLV with retention decay and discounting. Concluded with a data-driven recommendation on loyalty programme viability, supported by profitability modelling.</p>
+          <div class="project-tags">
+            <span class="project-tag">R</span>
+            <span class="project-tag">CLV Modelling</span>
+            <span class="project-tag">Customer Segmentation</span>
+            <span class="project-tag">Marketing Analytics</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Causal Inference, Pricing & Targeting in E-Commerce</div>
+          <a class="project-link" href="marketing_analytics.pdf" target="_blank">Part I: Pricing & Causal Inference →</a>
+          <a class="project-link-secondary" href="causal_inference_targeting.pdf" target="_blank">Part II: Segmentation & Targeting →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Two-part quantitative project on causal reasoning and predictive targeting using real e-commerce sales data. Part I built a marketing mix model, diagnosed endogeneity in price estimation, and applied Instrumental Variables to recover a clean causal price effect — correcting the bias in a naive OLS estimate. Also designed an A/B/N experiment and proposed a Regression Discontinuity Design to isolate the causal impact of star ratings on sales. Part II applied RFM segmentation, K-means clustering, and supervised learning models (decision tree, random forest) to identify high-value customer segments and optimise targeting ROI.</p>
+          <div class="project-tags">
+            <span class="project-tag">R</span>
+            <span class="project-tag">Causal Inference</span>
+            <span class="project-tag">Instrumental Variables</span>
+            <span class="project-tag">RFM Segmentation</span>
+            <span class="project-tag">Machine Learning</span>
+            <span class="project-tag">A/B Testing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Warner Bros. Discovery: Strategic Analysis & Deleveraging Proposal</div>
+          <a class="project-link" href="wbd_strategy.pdf" target="_blank">Read Report →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Strategic analysis of Warner Bros. Discovery's financial and competitive position, focused on a $38bn debt burden and the structural decline of linear TV revenue. Produced original data visualisations of segment performance and competitor benchmarking, and ran a cross-sectional regression on peer valuation multiples — quantifying the market penalty for leverage. Proposed an integrated deleveraging strategy over a split or full sale, with two modelled divestiture scenarios. Responsible for all data analysis, visualisations, and quantitative modelling.</p>
+          <div class="project-tags">
+            <span class="project-tag">R</span>
+            <span class="project-tag">Strategy</span>
+            <span class="project-tag">Financial Analysis</span>
+            <span class="project-tag">Regression</span>
+            <span class="project-tag">Data Visualisation</span>
+            <span class="project-tag">M&A</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── SKILLS ─── -->
+  <section id="skills">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">Skills</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="skills-layout">
+      <div class="skills-intro reveal">
+        From large-scale project management to machine learning — strategy, data, and execution in one place.
+      </div>
+
+      <div class="skills-groups">
+        <div class="reveal">
+          <div class="skill-group-label">Technical</div>
+          <div class="skill-pills">
+            <span class="pill">Python</span>
+            <span class="pill">R</span>
+            <span class="pill">SQL</span>
+            <span class="pill">VBA</span>
+            <span class="pill">Power BI</span>
+            <span class="pill">Tableau</span>
+            <span class="pill">Excel (Advanced)</span>
+            <span class="pill">Power Query</span>
+            <span class="pill">Microsoft Office</span>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="skill-group-label">Data & Analytics</div>
+          <div class="skill-pills">
+            <span class="pill">Data Visualisation</span>
+            <span class="pill">Statistical Analysis</span>
+            <span class="pill">Machine Learning</span>
+            <span class="pill">Predictive Analytics</span>
+            <span class="pill">Financial Modeling</span>
+            <span class="pill">Data Engineering</span>
+            <span class="pill">Time Series Analysis</span>
+            <span class="pill">Regression Analysis</span>
+            <span class="pill">Quantitative Modelling</span>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="skill-group-label">Business & Project Management</div>
+          <div class="skill-pills">
+            <span class="pill">Project Management</span>
+            <span class="pill">Strategic Planning</span>
+            <span class="pill">Business Development</span>
+            <span class="pill">Budget Management</span>
+            <span class="pill">KPI Design</span>
+            <span class="pill">Grant Writing</span>
+            <span class="pill">Stakeholder Reporting</span>
+            <span class="pill">Oracle (Advanced)</span>
+            <span class="pill">JIRA (Advanced)</span>
+            <span class="pill">Public Speaking</span>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="skill-group-label">Languages</div>
+          <div class="lang-bar-wrap">
+            <div class="lang-row">
+              <div class="lang-meta">
+                <span class="lang-name">Russian</span>
+                <span class="lang-level">Native</span>
+              </div>
+              <div class="lang-track"><div class="lang-fill" style="width:100%"></div></div>
+            </div>
+            <div class="lang-row">
+              <div class="lang-meta">
+                <span class="lang-name">English</span>
+                <span class="lang-level">C2 — Proficient</span>
+              </div>
+              <div class="lang-track"><div class="lang-fill" style="width:95%"></div></div>
+            </div>
+            <div class="lang-row">
+              <div class="lang-meta">
+                <span class="lang-name">Spanish</span>
+                <span class="lang-level">B1 — Intermediate</span>
+              </div>
+              <div class="lang-track"><div class="lang-fill" style="width:55%"></div></div>
+            </div>
+            <div class="lang-row">
+              <div class="lang-meta">
+                <span class="lang-name">German</span>
+                <span class="lang-level">A2 — Beginner</span>
+              </div>
+              <div class="lang-track"><div class="lang-fill" style="width:25%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certifications -->
+    <div style="margin-top: 4rem;">
+      <div class="skill-group-label" style="margin-bottom: 1rem;">Certifications</div>
+      <div class="certs-list">
+        <div class="cert-item reveal">
+          <div class="cert-icon">🏛</div>
+          <div class="cert-name">Foundations of Finance</div>
+          <div class="cert-issuer">University of Cambridge ICE</div>
+        </div>
+        <div class="cert-item reveal">
+          <div class="cert-icon">📊</div>
+          <div class="cert-name">Data Analysis Essentials</div>
+          <div class="cert-issuer">ImperialBusinessX</div>
+        </div>
+        <div class="cert-item reveal">
+          <div class="cert-icon">🐍</div>
+          <div class="cert-name">Data Analysis with Python</div>
+          <div class="cert-issuer">IBM</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── LEADERSHIP & EXTRAS ─── -->
+  <section id="extras">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">Leadership & Beyond</h2>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="extras-grid">
+      <div class="extra-box reveal">
+        <div class="extra-box-title">Leadership</div>
+        <p>Vice President of the MGIMO Law Club, overseeing 100+ projects per year. Equality & Diversity Officer at UEA CIS Society. Delegate co-organiser and moderator at SPIEF-2022.</p>
+      </div>
+      <div class="extra-box reveal">
+        <div class="extra-box-title">Volunteering</div>
+        <p>Delivered a cycle of financial literacy lectures for children in orphanages — turning professional knowledge into accessible education for those who need it most.</p>
+      </div>
+      <div class="extra-box reveal">
+        <div class="extra-box-title">Investing</div>
+        <p>Actively manages a personal investment portfolio of 10 equities and 35 crypto assets — applying data analysis to real-world financial decision-making.</p>
+      </div>
+      <div class="extra-box reveal">
+        <div class="extra-box-title">Hobbies</div>
+        <p>Baking and video games — a balance of precision and creativity that mirrors an approach to problem-solving: structured thinking with room for imagination.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ─── -->
+  <section id="contact">
+    <h2 class="contact-heading">Let's <em>connect</em></h2>
+    <p class="contact-sub">Based in London · Open to analytics, data science, and strategy roles</p>
+
+    <div class="contact-links">
+      <a class="contact-link" href="/cdn-cgi/l/email-protection#85e4ebe2e0e9ecebe4ffb4b4b0c5ece6e9eaf0e1abe6eae8">
+        <span>✉</span> <span class="__cf_email__" data-cfemail="b9d8d7dedcd5d0d7d8c388888cf9d0dad5d6ccdd97dad6d4">[email&#160;protected]</span>
+      </a>
+      <a class="contact-link" href="tel:+447832736149">
+        <span>☎</span> +44 7832 736 149
+      </a>
+      <a class="contact-link" href="https://linkedin.com/in/zarazzap" target="_blank">
+        <span>↗</span> LinkedIn
+      </a>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="footer-text">© 2026 Angelina Zapototskaia</div>
+    <div class="footer-right">
+      <a href="#hero">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <!-- ─── SCROLL REVEAL ─── -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script
