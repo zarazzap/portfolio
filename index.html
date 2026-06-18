@@ -957,6 +957,7 @@
         <div class="project-left">
           <div class="project-title">VIX Volatility Regime Forecasting</div>
           <a class="project-link" href="https://github.com/zarazzap/vix-regime-forecasting" target="_blank">View on GitHub →</a>
+          <a class="project-link-secondary" href="VIX_time_series_forecasting.pdf" target="_blank">Read Report →</a>
         </div>
         <div class="project-right">
           <p class="project-desc">End-to-end ML classification project predicting next-day VIX volatility regimes (Low / Medium / High) from 9,110 trading days of CBOE data. Engineered nine leakage-free features from VIX close prices, applied a strict chronological train/validation/test split, and benchmarked five models — logistic regression, random forest, XGBoost, MLP, and a PyTorch deep network — against a persistence baseline. The core finding was a rigorous null result: VIX regime persistence is so structurally strong (lag-1 autocorrelation > 0.98) that no model achieves a statistically significant improvement over simply carrying forward today's regime (McNemar p = 0.85). The project demonstrates that the options-implied nature of VIX sets an informational ceiling that univariate features alone cannot overcome.</p>
