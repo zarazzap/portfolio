@@ -1491,7 +1491,7 @@
   <!-- ─── THEME SCRIPT ─── -->
   <script>
     (function() {
-      const stored = localStorage.getItem('theme');
+      const stored = sessionStorage.getItem('theme');
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       const theme = stored || (prefersDark ? 'dark' : 'light');
       if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
@@ -1503,7 +1503,7 @@
       }
 
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  if (!localStorage.getItem('theme')) {
+  if (!sessionStorage.getItem('theme')) {
     const next = e.matches ? 'dark' : 'light';
     if (next === 'dark') {
       document.documentElement.removeAttribute('data-theme');
@@ -1522,7 +1522,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e =
         } else {
           document.documentElement.setAttribute('data-theme', 'light');
         }
-        localStorage.setItem('theme', next);
+        sessionStorage.setItem('theme', next);
         updateToggleIcon(next);
       };
     })();
