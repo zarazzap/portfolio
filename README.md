@@ -1,6 +1,6 @@
 ## hi, I'm Angelina 👋
 
-ucl msc business analytics. previously: lawyer, scaled projects to 7k people, wrote federal grants with 100% success rate, somehow ended up doing machine learning.
+ucl msc business analytics. previously: scaled projects to 7k people, wrote federal grants with 100% success rate, somehow ended up doing machine learning.
 
 this portfolio lives at [zarazzap.github.io](https://zarazzap.github.io/portfolio) — fair warning, there's a snake game on the landing page.
 
