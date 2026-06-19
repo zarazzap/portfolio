@@ -1502,6 +1502,18 @@
         if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
       }
 
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+  if (!localStorage.getItem('theme')) {
+    const next = e.matches ? 'dark' : 'light';
+    if (next === 'dark') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+    updateToggleIcon(next);
+  }
+});
+      
       window.toggleTheme = function() {
         const current = document.documentElement.getAttribute('data-theme');
         const next = current === 'light' ? 'dark' : 'light';
