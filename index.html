@@ -22,6 +22,7 @@
       --text-dim: #6a6460;
       --nav-bg: rgba(14,14,14,0.85);
       --shadow: rgba(0,0,0,0.3);
+      --game-bg: #0a0a0a;
     }
 
     /* ─── LIGHT THEME ─── */
@@ -37,6 +38,7 @@
       --text-dim: #b0a89e;
       --nav-bg: rgba(247,244,240,0.88);
       --shadow: rgba(0,0,0,0.08);
+      --game-bg: #e8e5e0;
     }
 
     /* ─── THEME TOGGLE ─── */
@@ -1178,7 +1180,7 @@
   #snake-canvas {
     display: block;
     margin: 1.5rem auto;
-    background: #0a0a0a;
+    background: var(--game-bg);
     border: 1px solid var(--border);
   }
 
@@ -1624,6 +1626,15 @@
     gameRunning: false,
   };
 
+  function getThemeColors() {
+    const computed = getComputedStyle(document.documentElement);
+    return {
+      bg: computed.getPropertyValue('--game-bg').trim(),
+      accent: computed.getPropertyValue('--accent').trim(),
+      accent2: computed.getPropertyValue('--accent2').trim(),
+    };
+  }
+
   function startSnake(difficulty) {
     snakeGame.target = difficulty === 'easy' ? 5 : 12;
     document.getElementById('snake-intro').style.display = 'none';
@@ -1691,15 +1702,16 @@
   }
 
   function drawSnakeGame() {
-    snakeGame.ctx.fillStyle = '#0a0a0a';
+    const colors = getThemeColors();
+    snakeGame.ctx.fillStyle = colors.bg;
     snakeGame.ctx.fillRect(0, 0, snakeGame.canvas.width, snakeGame.canvas.height);
     
-    snakeGame.ctx.fillStyle = '#c8a97e';
+    snakeGame.ctx.fillStyle = colors.accent;
     for (let segment of snakeGame.snake) {
       snakeGame.ctx.fillRect(segment.x * snakeGame.gridSize, segment.y * snakeGame.gridSize, snakeGame.gridSize - 2, snakeGame.gridSize - 2);
     }
     
-    snakeGame.ctx.fillStyle = '#ff5f57';
+    snakeGame.ctx.fillStyle = colors.accent2;
     snakeGame.ctx.fillRect(snakeGame.food.x * snakeGame.gridSize, snakeGame.food.y * snakeGame.gridSize, snakeGame.gridSize - 2, snakeGame.gridSize - 2);
   }
 
