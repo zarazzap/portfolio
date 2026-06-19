@@ -802,6 +802,639 @@
 
 <body>
 
+<!-- ─── SPLASH SCREEN ─── -->
+<div id="splash">
+  <div id="splash-inner">
+    <div id="splash-subtitle">portfolio / v1.0</div>
+    <div id="splash-question">what brings you here?</div>
+    <div id="splash-buttons">
+      <button class="splash-btn" id="btn-hiring" onclick="handleHiring()">
+        <span class="btn-icon">💼</span>
+        <span class="btn-label">hiring</span>
+        <span class="btn-sub">i come in peace</span>
+      </button>
+      <button class="splash-btn" id="btn-prying" onclick="handlePrying()">
+        <span class="btn-icon">👀</span>
+        <span class="btn-label">just prying</span>
+        <span class="btn-sub">i accept the consequences</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HIRING POPUP ─── -->
+<div id="hiring-popup" class="popup-overlay" style="display:none">
+  <div class="popup-box">
+    <div class="popup-emoji">😮‍💨</div>
+    <div class="popup-title">phew!</div>
+    <p class="popup-text">glad you're here for the right reasons.<br>enjoy the portfolio :)</p>
+    <button class="popup-btn" onclick="enterPortfolio()">let's go →</button>
+  </div>
+</div>
+
+<!-- ─── SNAKE GAME MODAL ─── -->
+<div id="snake-modal" class="popup-overlay" style="display:none">
+  <div class="snake-box">
+
+    <div id="snake-intro">
+      <div id="snake-terminal-header">
+        <span class="terminal-dot" style="background:#ff5f57"></span>
+        <span class="terminal-dot" style="background:#ffbd2e"></span>
+        <span class="terminal-dot" style="background:#28c840"></span>
+        <span style="flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:0.6rem;color:#444;letter-spacing:0.1em">access_control.exe</span>
+      </div>
+      <div id="snake-intro-body">
+        <div class="terminal-line"><span class="term-prompt">$</span> <span class="term-text">checking visitor credentials...</span></div>
+        <div class="terminal-line"><span class="term-prompt">!</span> <span class="term-text" style="color:#ff5f57">UNAUTHORISED. just prying detected.</span></div>
+        <div class="terminal-line"><span class="term-prompt">$</span> <span class="term-text">initiating worthiness protocol...</span></div>
+        <div class="snake-gate-text">only the worthy shall pass.<br>beat the snake. prove yourself.</div>
+        <div class="difficulty-row">
+          <button class="diff-btn" onclick="startSnake('easy')">
+            <span class="diff-label">easy</span>
+            <span class="diff-sub">eat 5 &nbsp;🐣</span>
+          </button>
+          <button class="diff-btn diff-hard" onclick="startSnake('medium')">
+            <span class="diff-label">medium</span>
+            <span class="diff-sub">eat 12 &nbsp;💀</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="snake-game-area" style="display:none">
+      <div id="snake-terminal-header">
+        <span class="terminal-dot" style="background:#ff5f57"></span>
+        <span class="terminal-dot" style="background:#ffbd2e"></span>
+        <span class="terminal-dot" style="background:#28c840"></span>
+        <span style="flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:0.6rem;color:#444;letter-spacing:0.1em">snake.exe — worthiness_test</span>
+      </div>
+      <div id="snake-hud">
+        <div class="hud-item">score <span id="snake-score" class="hud-val">0</span></div>
+        <div class="hud-progress-wrap"><div id="hud-progress"></div></div>
+        <div class="hud-item">target <span id="snake-target" class="hud-val">5</span></div>
+      </div>
+      <canvas id="snake-canvas" width="340" height="340"></canvas>
+      <div id="snake-controls">↑ ↓ ← → &nbsp;or&nbsp; WASD</div>
+    </div>
+
+    <div id="snake-win" style="display:none;text-align:center;padding:2rem 2rem 2.5rem">
+      <div style="font-size:3rem;margin-bottom:0.8rem">🎉</div>
+      <div class="popup-title">nah g ok fine</div>
+      <p class="popup-text">you actually did it. respect.<br>welcome to the portfolio.</p>
+      <button class="popup-btn" onclick="enterPortfolio()">finally →</button>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  /* ─── SPLASH ─── */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: #0a0a0a;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s ease;
+  }
+
+  #splash::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(200,169,126,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  #splash-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.8rem;
+    position: relative;
+  }
+
+  #splash-subtitle {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #3a3a3a;
+  }
+
+  #splash-question {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 5.5vw, 3.5rem);
+    font-weight: 300;
+    color: #f0e8dc;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
+  }
+
+  #splash-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .splash-btn {
+    background: #111;
+    border: 1px solid #222;
+    color: #666;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 1.4rem 2.2rem;
+    min-width: 170px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .splash-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(200,169,126,0.04) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .splash-btn:hover { border-color: #c8a97e; color: #c8a97e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,169,126,0.08); }
+  .splash-btn:hover::after { opacity: 1; }
+
+  .btn-icon { font-size: 1.8rem; }
+  .btn-label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: inherit; }
+  .btn-sub { font-size: 0.58rem; letter-spacing: 0.08em; color: #3a3a3a; transition: color 0.2s; }
+  .splash-btn:hover .btn-sub { color: #7a6a5a; }
+
+  /* ─── POPUPS ─── */
+  .popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.88);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(6px);
+  }
+
+  .popup-box {
+    background: #111;
+    border: 1px solid #222;
+    padding: 2.5rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    border-radius: 10px;
+    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  .popup-emoji { font-size: 3rem; margin-bottom: 0.6rem; }
+
+  .popup-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: #f0e8dc;
+    margin-bottom: 0.8rem;
+  }
+
+  .popup-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.07em;
+    color: #555;
+    line-height: 1.9;
+    margin-bottom: 1.8rem;
+  }
+
+  .popup-btn {
+    background: #c8a97e;
+    color: #0e0e0e;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.8rem 2.2rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s, transform 0.15s;
+    margin: 0.3rem;
+  }
+
+  .popup-btn:hover { background: #dbbf93; transform: translateY(-1px); }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.88) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  /* ─── SNAKE BOX ─── */
+  .snake-box {
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 10px;
+    width: 380px;
+    max-width: 95vw;
+    overflow: hidden;
+    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    box-shadow: 0 0 60px rgba(200,169,126,0.06);
+  }
+
+  #snake-terminal-header {
+    background: #161616;
+    border-bottom: 1px solid #1e1e1e;
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .terminal-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  #snake-intro-body {
+    padding: 1.4rem 1.6rem 1.8rem;
+  }
+
+  .terminal-line {
+    display: flex;
+    gap: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.06em;
+    color: #4a4a4a;
+    margin-bottom: 0.4rem;
+  }
+
+  .term-prompt { color: #c8a97e; flex-shrink: 0; }
+  .term-text { color: #5a5a5a; }
+
+  .snake-gate-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 300;
+    color: #c8a97e;
+    text-align: center;
+    margin: 1.2rem 0 1.4rem;
+    line-height: 1.5;
+  }
+
+  .difficulty-row {
+    display: flex;
+    gap: 0.7rem;
+  }
+
+  .diff-btn {
+    flex: 1;
+    background: #141414;
+    border: 1px solid #2a2a2a;
+    color: #888;
+    border-radius: 5px;
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
+    transition: all 0.2s;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .diff-btn:hover { border-color: #c8a97e; color: #c8a97e; background: #171717; }
+  .diff-btn.diff-hard:hover { border-color: #ff5f57; color: #ff5f57; }
+
+  .diff-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
+  .diff-sub { font-size: 0.62rem; color: inherit; opacity: 0.7; }
+
+  /* ─── HUD ─── */
+  #snake-hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid #1a1a1a;
+    background: #0f0f0f;
+    gap: 0.8rem;
+  }
+
+  .hud-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #3a3a3a;
+    white-space: nowrap;
+  }
+
+  .hud-val {
+    color: #c8a97e;
+    font-size: 0.75rem;
+    margin-left: 0.3rem;
+  }
+
+  .hud-progress-wrap {
+    flex: 1;
+    height: 3px;
+    background: #1e1e1e;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  #hud-progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(to right, #c8a97e, #e8c99e);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  #snake-canvas {
+    display: block;
+    background: #0a0a0a;
+    width: 100%;
+    cursor: none;
+  }
+
+  #snake-controls {
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    color: #272727;
+    padding: 0.5rem;
+    background: #0d0d0d;
+    border-top: 1px solid #161616;
+  }
+</style>
+
+<script>
+  function handleHiring() {
+    const s = document.getElementById('splash');
+    s.style.opacity = '0';
+    s.style.pointerEvents = 'none';
+    setTimeout(() => {
+      s.style.display = 'none';
+      document.getElementById('hiring-popup').style.display = 'flex';
+    }, 500);
+  }
+
+  function handlePrying() {
+    const s = document.getElementById('splash');
+    s.style.opacity = '0';
+    s.style.pointerEvents = 'none';
+    setTimeout(() => {
+      s.style.display = 'none';
+      document.getElementById('snake-modal').style.display = 'flex';
+    }, 500);
+  }
+
+  function enterPortfolio() {
+    document.getElementById('hiring-popup').style.display = 'none';
+    document.getElementById('snake-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // ─── SNAKE ───
+  let snakeInterval = null;
+  let snake, dir, nextDir, food, particles, score, targetScore, gameRunning;
+  const headImg = new Image();
+  headImg.src = 'snake_head.png';
+
+  function startSnake(difficulty) {
+    document.removeEventListener('keydown', handleKey);
+    document.getElementById('snake-intro').style.display = 'none';
+    document.getElementById('snake-game-area').style.display = 'block';
+    document.getElementById('snake-win').style.display = 'none';
+    targetScore = difficulty === 'easy' ? 5 : 12;
+    document.getElementById('snake-target').textContent = targetScore;
+    initSnake();
+    document.addEventListener('keydown', handleKey);
+  }
+
+  function initSnake() {
+    const canvas = document.getElementById('snake-canvas');
+    const ctx = canvas.getContext('2d');
+    const GRID = 20;
+    const COLS = canvas.width / GRID;
+    const ROWS = canvas.height / GRID;
+
+    snake = [{x:8,y:8},{x:7,y:8},{x:6,y:8}];
+    dir = {x:1, y:0};
+    nextDir = {x:1, y:0};
+    score = 0;
+    particles = [];
+    gameRunning = true;
+
+    placeFood(COLS, ROWS);
+    document.getElementById('snake-score').textContent = 0;
+    document.getElementById('hud-progress').style.width = '0%';
+
+    if (snakeInterval) clearInterval(snakeInterval);
+    const speed = targetScore === 5 ? 140 : 110;
+    snakeInterval = setInterval(() => gameLoop(ctx, GRID, COLS, ROWS), speed);
+  }
+
+  function placeFood(cols, rows) {
+    do {
+      food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), pulse: 0 };
+    } while (snake.some(s => s.x === food.x && s.y === food.y));
+  }
+
+  function spawnParticles(x, y, grid) {
+    for (let i = 0; i < 10; i++) {
+      const angle = (Math.PI * 2 * i) / 10 + Math.random() * 0.5;
+      particles.push({
+        x: x * grid + grid / 2, y: y * grid + grid / 2,
+        vx: Math.cos(angle) * (1.5 + Math.random() * 2.5),
+        vy: Math.sin(angle) * (1.5 + Math.random() * 2.5),
+        life: 1, r: 2 + Math.random() * 2
+      });
+    }
+  }
+
+  function gameLoop(ctx, GRID, COLS, ROWS) {
+    if (!gameRunning) return;
+    dir = nextDir;
+
+    const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return endSnake(ctx, GRID);
+    if (snake.some(s => s.x === head.x && s.y === head.y)) return endSnake(ctx, GRID);
+
+    snake.unshift(head);
+    const ate = head.x === food.x && head.y === food.y;
+    if (ate) {
+      score++;
+      document.getElementById('snake-score').textContent = score;
+      document.getElementById('hud-progress').style.width = (score / targetScore * 100) + '%';
+      spawnParticles(food.x, food.y, GRID);
+      if (score >= targetScore) {
+        clearInterval(snakeInterval);
+        draw(ctx, GRID, true);
+        setTimeout(winSnake, 600);
+        return;
+      }
+      placeFood(COLS, ROWS);
+    } else {
+      snake.pop();
+    }
+
+    food.pulse = (food.pulse || 0) + 0.15;
+    draw(ctx, GRID, false);
+  }
+
+  function draw(ctx, GRID, won) {
+    const canvas = document.getElementById('snake-canvas');
+    const W = canvas.width, H = canvas.height;
+
+    // background + subtle grid
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.018)';
+    ctx.lineWidth = 0.5;
+    for (let x = 0; x <= W; x += GRID) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y = 0; y <= H; y += GRID) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // particles
+    particles = particles.filter(p => p.life > 0.05);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; p.life -= 0.07;
+      const radius = Math.max(0.1, p.r * p.life);
+      ctx.globalAlpha = Math.max(0, p.life);
+      ctx.fillStyle = '#c8a97e';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+
+    // food — glowing pulsing circle
+    const fp = Math.sin(food.pulse) * 0.3 + 0.7;
+    const fr = GRID / 2 - 2 + Math.sin(food.pulse) * 1.5;
+    const fx = food.x * GRID + GRID / 2;
+    const fy = food.y * GRID + GRID / 2;
+    const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, fr * 2.5);
+    grd.addColorStop(0, `rgba(200,169,126,${fp * 0.35})`);
+    grd.addColorStop(1, 'transparent');
+    ctx.fillStyle = grd;
+    ctx.beginPath();
+    ctx.arc(fx, fy, fr * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#c8a97e';
+    ctx.beginPath();
+    ctx.arc(fx, fy, fr, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,240,210,0.7)';
+    ctx.beginPath();
+    ctx.arc(fx - fr * 0.3, fy - fr * 0.3, fr * 0.3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // snake body — gradient segments
+    for (let i = snake.length - 1; i >= 1; i--) {
+      const t = 1 - i / snake.length;
+      const alpha = 0.25 + t * 0.55;
+      const green = Math.floor(60 + t * 30);
+      ctx.fillStyle = `rgba(40,${green},50,${alpha})`;
+      const seg = snake[i];
+      const pad = 3 + (1 - t) * 2;
+      ctx.beginPath();
+      ctx.roundRect(seg.x * GRID + pad, seg.y * GRID + pad, GRID - pad * 2, GRID - pad * 2, 4);
+      ctx.fill();
+    }
+
+    // head — photo
+    const h = snake[0];
+    const cx = h.x * GRID + GRID / 2;
+    const cy = h.y * GRID + GRID / 2;
+    const r = GRID / 2 + 2;
+    const angle = Math.atan2(dir.y, dir.x) - Math.PI / 2;
+
+    // glow around head
+    const hgrd = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r * 2.5);
+    hgrd.addColorStop(0, 'rgba(200,169,126,0.15)');
+    hgrd.addColorStop(1, 'transparent');
+    ctx.fillStyle = hgrd;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r * 2.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.clip();
+    if (headImg.complete && headImg.naturalWidth > 0) {
+      ctx.drawImage(headImg, -r, -r, r * 2, r * 2);
+    } else {
+      ctx.fillStyle = '#f0e8dc';
+      ctx.fill();
+    }
+    // subtle border
+    ctx.strokeStyle = 'rgba(200,169,126,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function handleKey(e) {
+    const map = {
+      ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1},
+      ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
+      w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0},
+      W:{x:0,y:-1}, S:{x:0,y:1}, A:{x:-1,y:0}, D:{x:1,y:0}
+    };
+    if (map[e.key]) {
+      const n = map[e.key];
+      if (n.x !== -dir.x || n.y !== -dir.y) nextDir = n;
+      e.preventDefault();
+    }
+  }
+
+  function endSnake(ctx, GRID) {
+    clearInterval(snakeInterval);
+    snakeInterval = null;
+    gameRunning = false;
+    document.removeEventListener('keydown', handleKey);
+
+    const canvas = document.getElementById('snake-canvas');
+    ctx.fillStyle = 'rgba(180,40,40,0.25)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ff7070';
+    ctx.font = 'bold 13px DM Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('you died. try again.', canvas.width / 2, canvas.height / 2);
+
+    setTimeout(() => {
+      document.getElementById('snake-game-area').style.display = 'none';
+      document.getElementById('snake-intro').style.display = 'block';
+    }, 1600);
+  }
+
+  function winSnake() {
+    document.getElementById('snake-game-area').style.display = 'none';
+    document.getElementById('snake-win').style.display = 'block';
+    document.removeEventListener('keydown', handleKey);
+  }
+
+  document.body.style.overflow = 'hidden';
+</script>
+
   <!-- ─── NAV ─── -->
   <nav>
     <a class="nav-logo" href="#hero">A.Z.</a>
@@ -975,32 +1608,18 @@
 
       <div class="project-item reveal">
         <div class="project-left">
-          <div class="project-title">Financial Risk Mitigation for Strategic Project Management</div>
-          <a class="project-link" href="Financial risks in SPM Dissertation.pdf" target="_blank">Read Dissertation →</a>
+          <div class="project-title">Organisational Network Analysis</div>
+          <a class="project-link" href="Network_analysis.pdf" target="_blank">Read Report →</a>
         </div>
         <div class="project-right">
-          <p class="project-desc">Dissertation examining how organisations can identify and mitigate financial risks across complex, multi-stage projects. Developed a structured risk mitigation framework grounded in financial theory and applied to strategic project contexts, with practical recommendations for decision-makers managing large-scale initiatives under uncertainty.</p>
-          <div class="project-tags">
-            <span class="project-tag">Financial Risk</span>
-            <span class="project-tag">Strategy</span>
-            <span class="project-tag">Project Management</span>
-            <span class="project-tag">Research</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Marketing Analytics: Customer Segmentation & CLV Modelling</div>
-          <a class="project-link" href="marketing_analytics_clv.pdf" target="_blank">View Project →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Full-cycle marketing analytics project in R, covering market analysis, channel evaluation, and customer lifetime value modelling. Compared acquisition channels by cost-efficiency, built behavioural customer segments, and computed 24-month CLV with retention decay and discounting. Concluded with a data-driven recommendation on loyalty programme viability, supported by profitability modelling.</p>
+          <p class="project-desc">Case study analysis of a fictional 28-employee London consultancy (IdeaWeb). Computed degree, closeness, betweenness, and eigenvector centrality across a formal collaboration network — identifying the group head as the critical bottleneck (betweenness = 0.467) despite having fewer direct connections than team leads. Proposed an evidence-based floor allocation minimising severed formal ties. Then diagnosed why client satisfaction declined post-move by analysing a parallel informal lunch network: the formal-network-based split had severed key informal ties driving creative performance. Applied community detection to propose a revised split preserving those connections. Finally, interpreted a multivariate OLS regression on 438 employees across 16 global offices — finding formal betweenness the strongest predictor of promotion (+11.3pp per SD), informal degree the strongest protective factor against negative reviews, and a 12pp female promotion deficit that exceeded every network coefficient in magnitude.</p>
           <div class="project-tags">
             <span class="project-tag">R</span>
-            <span class="project-tag">CLV Modelling</span>
-            <span class="project-tag">Customer Segmentation</span>
-            <span class="project-tag">Marketing Analytics</span>
+            <span class="project-tag">Network Analysis</span>
+            <span class="project-tag">Centrality Metrics</span>
+            <span class="project-tag">Community Detection</span>
+            <span class="project-tag">OLS Regression</span>
+            <span class="project-tag">Data Visualisation</span>
           </div>
         </div>
       </div>
@@ -1012,7 +1631,7 @@
           <a class="project-link-secondary" href="causal_inference_targeting.pdf" target="_blank">Part II: Segmentation & Targeting →</a>
         </div>
         <div class="project-right">
-          <p class="project-desc">Two-part quantitative project on causal reasoning and predictive targeting using real e-commerce sales data. Part I built a marketing mix model, diagnosed endogeneity in price estimation, and applied Instrumental Variables to recover a clean causal price effect — correcting the bias in a naive OLS estimate. Also designed an A/B/N experiment and proposed a Regression Discontinuity Design to isolate the causal impact of star ratings on sales. Part II applied RFM segmentation, K-means clustering, and supervised learning models (decision tree, random forest) to identify high-value customer segments and optimise targeting ROI.</p>
+          <p class="project-desc">Two-part quantitative project on causal reasoning and predictive targeting using real e-commerce sales data. Part I built a marketing mix model, diagnosed endogeneity in price estimation, and applied Instrumental Variables to recover a clean causal price effect — correcting the bias in a naive OLS estimate. Also designed an A/B/N experiment and proposed a Regression Discontinuity Design to isolate the causal impact of star ratings on sales. Part II applied RFM segmentation, K-means clustering, and supervised learning models (decision tree, random forest) to identify high-value customer segments and optimise targeting ROI — improving campaign return from −22% (blanket) to +40% (targeted).</p>
           <div class="project-tags">
             <span class="project-tag">R</span>
             <span class="project-tag">Causal Inference</span>
@@ -1020,6 +1639,25 @@
             <span class="project-tag">RFM Segmentation</span>
             <span class="project-tag">Machine Learning</span>
             <span class="project-tag">A/B Testing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Sustainability Analytics & OPEX Regression</div>
+          <a class="project-link" href="Stats_analysis_report.pdf" target="_blank">Read Report →</a>
+          <a class="project-link-secondary" href="Stats_analysis.xlsx" target="_blank">View Excel →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Case study statistical analysis of 200 European firms across Construction, Manufacturing, and Transportation to understand OPEX drivers and evaluate whether sustainability initiatives aligned with environmental performance. Applied chi-square tests and Welch t-tests to assess whether green programme participation correlated with recycling outcomes — finding no statistically significant association before controlling for firm size. Built a log-log OLS regression (R² = 0.89) with employment, CAPEX, and sustainability investment elasticities, sector fixed effects, and full diagnostics: Shapiro-Wilk, Breusch-Pagan, VIF, Cook's distance, and HC1 robust standard errors as a robustness check. Key finding: sustainability investment reduces OPEX with elasticity −0.47 (p < 0.001); programme participation has no significant conditional effect — diagnosing a design gap rather than a data gap.</p>
+          <div class="project-tags">
+            <span class="project-tag">R</span>
+            <span class="project-tag">OLS Regression</span>
+            <span class="project-tag">Hypothesis Testing</span>
+            <span class="project-tag">Diagnostic Testing</span>
+            <span class="project-tag">Robust Standard Errors</span>
+            <span class="project-tag">Sector Fixed Effects</span>
           </div>
         </div>
       </div>
@@ -1038,6 +1676,38 @@
             <span class="project-tag">Regression</span>
             <span class="project-tag">Data Visualisation</span>
             <span class="project-tag">M&A</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Marketing Analytics: Customer Segmentation & CLV Modelling</div>
+          <a class="project-link" href="marketing_analytics_clv.pdf" target="_blank">View Project →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Full-cycle marketing analytics project in R, covering market analysis, channel evaluation, and customer lifetime value modelling. Compared acquisition channels by cost-efficiency, built behavioural customer segments, and computed 24-month CLV with retention decay and discounting. Concluded with a data-driven recommendation on loyalty programme viability — modelling the trade-off between retention uplift and incentive cost and recommending against launch on profitability grounds.</p>
+          <div class="project-tags">
+            <span class="project-tag">R</span>
+            <span class="project-tag">CLV Modelling</span>
+            <span class="project-tag">Customer Segmentation</span>
+            <span class="project-tag">Marketing Analytics</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-item reveal">
+        <div class="project-left">
+          <div class="project-title">Financial Risk Mitigation for Strategic Project Management</div>
+          <a class="project-link" href="Financial risks in SPM Dissertation.pdf" target="_blank">Read Dissertation →</a>
+        </div>
+        <div class="project-right">
+          <p class="project-desc">Dissertation examining how organisations can identify and mitigate financial risks across complex, multi-stage projects. Developed a structured risk mitigation framework grounded in financial theory and applied to strategic project contexts, with practical recommendations for decision-makers managing large-scale initiatives under uncertainty.</p>
+          <div class="project-tags">
+            <span class="project-tag">Financial Risk</span>
+            <span class="project-tag">Strategy</span>
+            <span class="project-tag">Project Management</span>
+            <span class="project-tag">Research</span>
           </div>
         </div>
       </div>
