@@ -87,7 +87,7 @@
       content: '';
       position: fixed;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' result='noise'/%3C/filter%3E%3Crect width='256' height='256' fill='%23000' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
       pointer-events: none;
       z-index: 9999;
       opacity: 0.4;
@@ -998,984 +998,736 @@
     font-family: 'DM Mono', monospace;
     cursor: pointer;
     border-radius: 6px;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.4rem;
-    padding: 1.4rem 2.2rem;
-    min-width: 170px;
+    gap: 0.3rem;
+    width: 120px;
+    height: 90px;
+    justify-content: center;
     transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
   }
 
-  .popup-emoji { font-size: 3rem; margin-bottom: 0.6rem; }
+  .splash-btn:hover { background: var(--surface2); border-color: var(--accent); }
 
-  .splash-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, rgba(200,169,126,0.04) 0%, transparent 60%);
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
+  .btn-icon { font-size: 2rem; }
+  .btn-label { font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; }
+  .btn-sub { font-size: 0.55rem; color: var(--text-dim); }
 
-  .splash-btn:hover { border-color: #c8a97e; color: #c8a97e; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(200,169,126,0.08); }
-  .splash-btn:hover::after { opacity: 1; }
-
-  .btn-icon { font-size: 1.8rem; }
-  .btn-label { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: inherit; }
-  .btn-sub { font-size: 0.58rem; letter-spacing: 0.08em; color: var(--text-dim); transition: color 0.2s; }
-  .splash-btn:hover .btn-sub { color: var(--text-muted); }
-
-  /* ─── POPUPS ─── */
+  /* ─── POPUP OVERLAY ─── */
   .popup-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.75);
-    z-index: 10000;
+    background: rgba(0,0,0,0.5);
+    z-index: 9998;
     display: flex;
     align-items: center;
     justify-content: center;
-    backdrop-filter: blur(6px);
   }
 
-  .popup-box {
+  .popup-box, .snake-box {
     background: var(--surface);
     border: 1px solid var(--border);
+    border-radius: 8px;
     padding: 2.5rem;
-    max-width: 400px;
-    width: 90%;
+    max-width: 380px;
     text-align: center;
-    border-radius: 10px;
-    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .popup-emoji {
+    font-size: 3rem;
+    margin-bottom: 0.8rem;
   }
 
   .popup-title {
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.8rem;
     font-weight: 300;
-    color: var(--text);
     margin-bottom: 0.8rem;
   }
 
   .popup-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.07em;
-    color: var(--text-dim);
-    line-height: 1.9;
-    margin-bottom: 1.8rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
   }
 
   .popup-btn {
-    background: #c8a97e;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.8rem 2rem;
+    background: var(--accent);
     color: #0e0e0e;
     border: none;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    padding: 0.8rem 2.2rem;
+    border-radius: 2px;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s, transform 0.15s;
-    margin: 0.3rem;
+    transition: background 0.2s;
   }
 
-  .popup-btn:hover { background: #dbbf93; transform: translateY(-1px); }
+  .popup-btn:hover { background: #dbbf93; }
 
-  @keyframes popIn {
-    from { opacity: 0; transform: scale(0.88) translateY(10px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  /* ─── SNAKE BOX ─── */
+  /* ─── SNAKE GAME ─── */
   .snake-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    width: 380px;
-    max-width: 95vw;
+    max-width: 500px;
+    padding: 0;
     overflow: hidden;
-    animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
-    box-shadow: 0 0 60px var(--shadow);
   }
 
   #snake-terminal-header {
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    padding: 0.6rem 0.9rem;
+    background: #333;
+    padding: 0.4rem 0.8rem;
     display: flex;
     align-items: center;
     gap: 0.4rem;
+    border-bottom: 1px solid #555;
   }
 
   .terminal-dot {
-    width: 10px; height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    flex-shrink: 0;
   }
 
   #snake-intro-body {
-    padding: 1.4rem 1.6rem 1.8rem;
+    padding: 1.5rem;
   }
 
   .terminal-line {
-    display: flex;
-    gap: 0.6rem;
+    text-align: left;
     font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    letter-spacing: 0.06em;
-    color: var(--text-dim);
+    font-size: 0.7rem;
+    color: #aaa;
     margin-bottom: 0.4rem;
   }
 
-  .term-prompt { color: var(--accent); flex-shrink: 0; }
-  .term-text { color: var(--text-muted); }
+  .term-prompt { color: #ff5f57; font-weight: bold; }
+  .term-text { color: #aaa; }
 
   .snake-gate-text {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.15rem;
-    font-weight: 300;
     color: var(--accent);
-    text-align: center;
-    margin: 1.2rem 0 1.4rem;
-    line-height: 1.5;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    margin: 1rem 0;
+    line-height: 1.3;
   }
 
   .difficulty-row {
     display: flex;
-    gap: 0.7rem;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
   }
 
   .diff-btn {
     flex: 1;
-    background: var(--surface2);
+    background: transparent;
     border: 1px solid var(--border);
     color: var(--text-muted);
-    border-radius: 5px;
-    padding: 0.75rem 0.5rem;
+    font-family: 'DM Mono', monospace;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
     cursor: pointer;
+    transition: all 0.2s;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.2rem;
-    transition: all 0.2s;
-    font-family: 'DM Mono', monospace;
   }
 
-  .diff-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--surface); }
-  .diff-btn.diff-hard:hover { border-color: #ff5f57; color: #ff5f57; }
+  .diff-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .diff-btn.diff-hard { border-color: #ff5f57; color: #ff5f57; }
 
-  .diff-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; }
-  .diff-sub { font-size: 0.62rem; color: inherit; opacity: 0.7; }
+  .diff-label { font-weight: 500; font-size: 0.75rem; }
+  .diff-sub { font-size: 0.62rem; opacity: 0.7; }
 
-  /* ─── HUD ─── */
   #snake-hud {
+    background: #1a1a1a;
+    border-bottom: 1px solid #333;
+    padding: 0.8rem;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--surface2);
-    gap: 0.8rem;
-  }
-
-  .hud-item {
+    justify-content: space-around;
     font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    white-space: nowrap;
+    font-size: 0.7rem;
+    color: var(--accent);
   }
 
-  .hud-val {
-    color: var(--accent);
-    font-size: 0.75rem;
-    margin-left: 0.3rem;
-  }
+  .hud-item { display: flex; gap: 0.3rem; }
+  .hud-val { font-weight: bold; }
 
   .hud-progress-wrap {
-    flex: 1;
-    height: 3px;
+    flex: 0 0 60px;
+    height: 2px;
     background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
+    position: relative;
   }
 
   #hud-progress {
     height: 100%;
+    background: linear-gradient(to right, var(--accent), var(--accent2));
     width: 0%;
-    background: linear-gradient(to right, var(--accent), #e8c99e);
-    border-radius: 2px;
-    transition: width 0.3s ease;
+    transition: width 0.2s;
   }
 
   #snake-canvas {
     display: block;
+    margin: 1.5rem auto;
     background: #0a0a0a;
-    width: 100%;
-    cursor: none;
+    border: 1px solid var(--border);
   }
 
   #snake-controls {
     text-align: center;
+    padding: 0.8rem;
     font-family: 'DM Mono', monospace;
-    font-size: 0.55rem;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    padding: 0.5rem;
-    background: var(--surface2);
+    font-size: 0.7rem;
+    color: var(--text-muted);
     border-top: 1px solid var(--border);
   }
 </style>
 
+<!-- ─── NAVIGATION ─── -->
+<nav>
+  <a href="#" class="nav-logo">AZ</a>
+  <ul class="nav-links">
+    <li><a href="#experience">experience</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#projects">projects</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── THEME TOGGLE BUTTON ─── -->
+<button id="theme-toggle" onclick="window.toggleTheme()">🌙</button>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">full-stack developer</div>
+    <h1 class="hero-name">Hi, I'm <em>Angelina</em></h1>
+    <p class="hero-desc">I build elegant web experiences and robust backends. Passionate about clean code, user-centric design, and solving complex problems with technology.</p>
+    <div class="hero-tags">
+      <span class="tag accent">full-stack</span>
+      <span class="tag">javascript</span>
+      <span class="tag">react</span>
+      <span class="tag">node.js</span>
+    </div>
+    <div class="hero-links">
+      <a href="#projects" class="btn btn-primary">view work</a>
+      <a href="#contact" class="btn btn-outline">get in touch</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="stat-box">
+      <div class="stat-num">5+</div>
+      <div class="stat-label">years experience</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">20+</div>
+      <div class="stat-label">projects completed</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-num">40+</div>
+      <div class="stat-label">happy clients</div>
+    </div>
+    <div class="hero-location">
+      <div class="loc-dot"></div>
+      <span>San Francisco, CA</span>
+    </div>
+  </div>
+
+  <div class="hero-number">01</div>
+  <div class="hero-bg-line"></div>
+</section>
+
+<!-- ─── EXPERIENCE ─── -->
+<section id="experience">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Experience</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-meta">
+      <div class="exp-period">2022 – present</div>
+      <div class="exp-org">tech startup</div>
+    </div>
+    <div>
+      <h3 class="exp-role">Senior Full-Stack Developer</h3>
+      <ul class="exp-highlights">
+        <li>Led architecture redesign, improving app performance by 40%</li>
+        <li>Mentored 3 junior developers and established code review standards</li>
+        <li>Built real-time collaboration features using WebSockets</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-meta">
+      <div class="exp-period">2020 – 2022</div>
+      <div class="exp-org">digital agency</div>
+    </div>
+    <div>
+      <h3 class="exp-role">Full-Stack Developer</h3>
+      <ul class="exp-highlights">
+        <li>Developed 15+ client websites using React and Node.js</li>
+        <li>Implemented CI/CD pipelines reducing deployment time by 50%</li>
+        <li>Collaborated with designers to translate mockups into responsive UIs</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="exp-item">
+    <div class="exp-meta">
+      <div class="exp-period">2019 – 2020</div>
+      <div class="exp-org">freelance</div>
+    </div>
+    <div>
+      <h3 class="exp-role">Web Developer</h3>
+      <ul class="exp-highlights">
+        <li>Built custom websites for small businesses and startups</li>
+        <li>Provided ongoing maintenance and technical support</li>
+        <li>Learned and mastered modern web development frameworks</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EDUCATION ─── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Education</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="edu-grid">
+    <div class="edu-card">
+      <div class="edu-year">2019</div>
+      <h3 class="edu-degree">B.S. Computer Science</h3>
+      <div class="edu-school">State University</div>
+      <div class="edu-detail">GPA: 3.8 | Dean's List</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2018</div>
+      <h3 class="edu-degree">Web Development Bootcamp</h3>
+      <div class="edu-school">Code Academy</div>
+      <div class="edu-detail">Intensive 12-week program</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-year">2017</div>
+      <h3 class="edu-degree">AWS Solutions Architect</h3>
+      <div class="edu-school">Amazon Web Services</div>
+      <div class="edu-detail">Professional certification</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── SKILLS ─── -->
+<section id="skills">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Skills</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="skills-layout">
+    <div class="skills-intro">
+      I'm proficient in modern technologies and frameworks that power today's web.
+    </div>
+    <div class="skills-groups">
+      <div>
+        <div class="skill-group-label">frontend</div>
+        <div class="skill-pills">
+          <span class="pill">React</span>
+          <span class="pill">TypeScript</span>
+          <span class="pill">Tailwind CSS</span>
+          <span class="pill">Vue.js</span>
+          <span class="pill">Next.js</span>
+        </div>
+      </div>
+      <div>
+        <div class="skill-group-label">backend</div>
+        <div class="skill-pills">
+          <span class="pill">Node.js</span>
+          <span class="pill">Python</span>
+          <span class="pill">PostgreSQL</span>
+          <span class="pill">MongoDB</span>
+          <span class="pill">Express</span>
+        </div>
+      </div>
+      <div>
+        <div class="skill-group-label">devops</div>
+        <div class="skill-pills">
+          <span class="pill">Docker</span>
+          <span class="pill">AWS</span>
+          <span class="pill">Git</span>
+          <span class="pill">CI/CD</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CERTIFICATIONS ─── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Certifications</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="certs-list">
+    <div class="cert-item">
+      <div class="cert-icon">🏆</div>
+      <div class="cert-name">AWS Solutions Architect</div>
+      <div class="cert-issuer">Amazon Web Services</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">⭐</div>
+      <div class="cert-name">Google Cloud Professional</div>
+      <div class="cert-issuer">Google Cloud</div>
+    </div>
+    <div class="cert-item">
+      <div class="cert-icon">✓</div>
+      <div class="cert-name">Certified JavaScript Developer</div>
+      <div class="cert-issuer">JavaScript Institute</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── LANGUAGES ─── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Languages</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="lang-bar-wrap">
+    <div class="lang-row">
+      <div class="lang-meta">
+        <span class="lang-name">English</span>
+        <span class="lang-level">native</span>
+      </div>
+      <div class="lang-track"><div class="lang-fill" style="width:100%"></div></div>
+    </div>
+    <div class="lang-row">
+      <div class="lang-meta">
+        <span class="lang-name">Russian</span>
+        <span class="lang-level">fluent</span>
+      </div>
+      <div class="lang-track"><div class="lang-fill" style="width:90%"></div></div>
+    </div>
+    <div class="lang-row">
+      <div class="lang-meta">
+        <span class="lang-name">Spanish</span>
+        <span class="lang-level">intermediate</span>
+      </div>
+      <div class="lang-track"><div class="lang-fill" style="width:65%"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXTRAS ─── -->
+<section>
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">A Bit More</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="extras-grid">
+    <div class="extra-box">
+      <div class="extra-box-title">interests</div>
+      <p>When I'm not coding, I enjoy open-source contributions, writing technical blogs, and exploring new frameworks. I'm also passionate about mentoring junior developers.</p>
+    </div>
+    <div class="extra-box">
+      <div class="extra-box-title">hobbies</div>
+      <p>Coffee enthusiast ☕, occasional photographer 📸, and an avid reader of sci-fi novels. I love hiking on weekends and attending tech meetups.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROJECTS ─── -->
+<section id="projects">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Projects</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="projects-list">
+    <div class="project-item">
+      <div class="project-left">
+        <h3 class="project-title">SaaS Dashboard</h3>
+        <a href="#" class="project-link">view project →</a>
+        <a href="#" class="project-link-secondary">source code →</a>
+      </div>
+      <div class="project-right">
+        <p class="project-desc">A comprehensive SaaS analytics dashboard built with React and Node.js. Features real-time data visualization, user authentication, and multi-tenant architecture.</p>
+        <div class="project-tags">
+          <span class="project-tag">React</span>
+          <span class="project-tag">Node.js</span>
+          <span class="project-tag">PostgreSQL</span>
+          <span class="project-tag">D3.js</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item">
+      <div class="project-left">
+        <h3 class="project-title">E-commerce Platform</h3>
+        <a href="#" class="project-link">view project →</a>
+        <a href="#" class="project-link-secondary">source code →</a>
+      </div>
+      <div class="project-right">
+        <p class="project-desc">Full-featured e-commerce platform with product catalog, shopping cart, and payment integration. Optimized for performance and mobile responsiveness.</p>
+        <div class="project-tags">
+          <span class="project-tag">Next.js</span>
+          <span class="project-tag">Stripe</span>
+          <span class="project-tag">MongoDB</span>
+          <span class="project-tag">Tailwind</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item">
+      <div class="project-left">
+        <h3 class="project-title">AI Chat Application</h3>
+        <a href="#" class="project-link">view project →</a>
+        <a href="#" class="project-link-secondary">source code →</a>
+      </div>
+      <div class="project-right">
+        <p class="project-desc">Real-time chat application with AI-powered responses. Built with WebSockets for instant messaging and GPT integration for intelligent replies.</p>
+        <div class="project-tags">
+          <span class="project-tag">Vue.js</span>
+          <span class="project-tag">WebSocket</span>
+          <span class="project-tag">OpenAI API</span>
+          <span class="project-tag">Express</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <h2 class="contact-heading">Let's <em>work</em> together</h2>
+  <p class="contact-sub">I'm always interested in hearing about new projects and opportunities.</p>
+  <div class="contact-links">
+    <a href="mailto:hello@example.com" class="contact-link">✉ email</a>
+    <a href="#" class="contact-link">💼 linkedin</a>
+    <a href="#" class="contact-link">👨‍💻 github</a>
+    <a href="#" class="contact-link">𝕏 twitter</a>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <p class="footer-text">© 2024 Angelina Zapototskaia. All rights reserved.</p>
+  <div class="footer-right">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Sitemap</a>
+  </div>
+</footer>
+
 <script>
+  // ─── THEME TOGGLE ─── //
+  function initTheme() {
+    const stored = localStorage.getItem('theme');
+    if (stored) {
+      document.documentElement.setAttribute('data-theme', stored);
+      updateToggleIcon(stored);
+    } else {
+      const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = isDark ? 'dark' : 'light';
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      updateToggleIcon(theme);
+    }
+  }
+
+  function updateToggleIcon(theme) {
+    const toggle = document.getElementById('theme-toggle');
+    toggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+
+  window.toggleTheme = function() {
+    const current = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    
+    localStorage.setItem('theme', next);
+    if (next === 'dark') {
+      document.documentElement.removeAttribute('data-theme');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+    updateToggleIcon(next);
+  }
+
+  // Listen for system theme preference changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('theme')) {
+      const next = e.matches ? 'dark' : 'light';
+      if (next === 'dark') {
+        document.documentElement.removeAttribute('data-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      updateToggleIcon(next);
+    }
+  });
+
+  // Initialize theme on page load
+  initTheme();
+
+  // ─── SPLASH SCREEN ─── //
   function handleHiring() {
-    const s = document.getElementById('splash');
-    s.style.opacity = '0';
-    s.style.pointerEvents = 'none';
-    setTimeout(() => {
-      s.style.display = 'none';
-      document.getElementById('hiring-popup').style.display = 'flex';
-    }, 500);
+    document.getElementById('splash').style.opacity = '0';
+    setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+    document.getElementById('hiring-popup').style.display = 'flex';
   }
 
   function handlePrying() {
-    const s = document.getElementById('splash');
-    s.style.opacity = '0';
-    s.style.pointerEvents = 'none';
-    setTimeout(() => {
-      s.style.display = 'none';
-      document.getElementById('snake-modal').style.display = 'flex';
-    }, 500);
+    document.getElementById('splash').style.opacity = '0';
+    setTimeout(() => document.getElementById('splash').style.display = 'none', 500);
+    document.getElementById('snake-modal').style.display = 'flex';
   }
 
   function enterPortfolio() {
     document.getElementById('hiring-popup').style.display = 'none';
     document.getElementById('snake-modal').style.display = 'none';
-    document.body.style.overflow = '';
   }
 
-  // ─── SNAKE ───
-  let snakeInterval = null;
-  let snake, dir, nextDir, food, particles, score, targetScore, gameRunning;
-  const headImg = new Image();
-  headImg.src = 'snake_head.png';
+  // ─── SNAKE GAME ─── //
+  let snakeGame = {
+    canvas: null,
+    ctx: null,
+    gridSize: 20,
+    snake: [{x: 10, y: 10}],
+    food: {x: 15, y: 15},
+    direction: {x: 1, y: 0},
+    nextDirection: {x: 1, y: 0},
+    score: 0,
+    target: 5,
+    gameRunning: false,
+  };
 
   function startSnake(difficulty) {
-    document.removeEventListener('keydown', handleKey);
+    snakeGame.target = difficulty === 'easy' ? 5 : 12;
     document.getElementById('snake-intro').style.display = 'none';
     document.getElementById('snake-game-area').style.display = 'block';
-    document.getElementById('snake-win').style.display = 'none';
-    targetScore = difficulty === 'easy' ? 5 : 12;
-    document.getElementById('snake-target').textContent = targetScore;
-    initSnake();
-    document.addEventListener('keydown', handleKey);
+    document.getElementById('snake-target').textContent = snakeGame.target;
+    
+    snakeGame.canvas = document.getElementById('snake-canvas');
+    snakeGame.ctx = snakeGame.canvas.getContext('2d');
+    snakeGame.gameRunning = true;
+    snakeGame.score = 0;
+    snakeGame.snake = [{x: 10, y: 10}];
+    snakeGame.direction = {x: 1, y: 0};
+    
+    document.addEventListener('keydown', handleSnakeInput);
+    gameLoop();
   }
 
-  function initSnake() {
-    const canvas = document.getElementById('snake-canvas');
-    const ctx = canvas.getContext('2d');
-    const GRID = 20;
-    const COLS = canvas.width / GRID;
-    const ROWS = canvas.height / GRID;
-
-    snake = [{x:8,y:8},{x:7,y:8},{x:6,y:8}];
-    dir = {x:1, y:0};
-    nextDir = {x:1, y:0};
-    score = 0;
-    particles = [];
-    gameRunning = true;
-
-    placeFood(COLS, ROWS);
-    document.getElementById('snake-score').textContent = 0;
-    document.getElementById('hud-progress').style.width = '0%';
-
-    if (snakeInterval) clearInterval(snakeInterval);
-    const speed = targetScore === 5 ? 140 : 110;
-    snakeInterval = setInterval(() => gameLoop(ctx, GRID, COLS, ROWS), speed);
+  function handleSnakeInput(e) {
+    const key = e.key.toLowerCase();
+    if (['arrowup', 'w'].includes(key) && snakeGame.direction.y === 0) snakeGame.nextDirection = {x: 0, y: -1};
+    if (['arrowdown', 's'].includes(key) && snakeGame.direction.y === 0) snakeGame.nextDirection = {x: 0, y: 1};
+    if (['arrowleft', 'a'].includes(key) && snakeGame.direction.x === 0) snakeGame.nextDirection = {x: -1, y: 0};
+    if (['arrowright', 'd'].includes(key) && snakeGame.direction.x === 0) snakeGame.nextDirection = {x: 1, y: 0};
   }
 
-  function placeFood(cols, rows) {
-    do {
-      food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows), pulse: 0 };
-    } while (snake.some(s => s.x === food.x && s.y === food.y));
-  }
-
-  function spawnParticles(x, y, grid) {
-    for (let i = 0; i < 10; i++) {
-      const angle = (Math.PI * 2 * i) / 10 + Math.random() * 0.5;
-      particles.push({
-        x: x * grid + grid / 2, y: y * grid + grid / 2,
-        vx: Math.cos(angle) * (1.5 + Math.random() * 2.5),
-        vy: Math.sin(angle) * (1.5 + Math.random() * 2.5),
-        life: 1, r: 2 + Math.random() * 2
-      });
-    }
-  }
-
-  function gameLoop(ctx, GRID, COLS, ROWS) {
-    if (!gameRunning) return;
-    dir = nextDir;
-
-    const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
-    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) return endSnake(ctx, GRID);
-    if (snake.some(s => s.x === head.x && s.y === head.y)) return endSnake(ctx, GRID);
-
-    snake.unshift(head);
-    const ate = head.x === food.x && head.y === food.y;
-    if (ate) {
-      score++;
-      document.getElementById('snake-score').textContent = score;
-      document.getElementById('hud-progress').style.width = (score / targetScore * 100) + '%';
-      spawnParticles(food.x, food.y, GRID);
-      if (score >= targetScore) {
-        clearInterval(snakeInterval);
-        draw(ctx, GRID, true);
-        setTimeout(winSnake, 600);
+  function gameLoop() {
+    if (!snakeGame.gameRunning) return;
+    
+    snakeGame.direction = snakeGame.nextDirection;
+    const head = snakeGame.snake[0];
+    const newHead = {
+      x: (head.x + snakeGame.direction.x + 17) % 17,
+      y: (head.y + snakeGame.direction.y + 17) % 17
+    };
+    
+    for (let segment of snakeGame.snake) {
+      if (newHead.x === segment.x && newHead.y === segment.y) {
+        endSnakeGame();
         return;
       }
-      placeFood(COLS, ROWS);
+    }
+    
+    snakeGame.snake.unshift(newHead);
+    
+    if (newHead.x === snakeGame.food.x && newHead.y === snakeGame.food.y) {
+      snakeGame.score++;
+      document.getElementById('snake-score').textContent = snakeGame.score;
+      document.getElementById('hud-progress').style.width = (snakeGame.score / snakeGame.target * 100) + '%';
+      
+      if (snakeGame.score >= snakeGame.target) {
+        winSnakeGame();
+        return;
+      }
+      
+      snakeGame.food = {
+        x: Math.floor(Math.random() * 17),
+        y: Math.floor(Math.random() * 17)
+      };
     } else {
-      snake.pop();
+      snakeGame.snake.pop();
     }
-
-    food.pulse = (food.pulse || 0) + 0.15;
-    draw(ctx, GRID, false);
+    
+    drawSnakeGame();
+    setTimeout(gameLoop, 100);
   }
 
-  function draw(ctx, GRID, won) {
-    const canvas = document.getElementById('snake-canvas');
-    const W = canvas.width, H = canvas.height;
-
-    // background + subtle grid
-    ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(0, 0, W, H);
-
-    ctx.strokeStyle = 'rgba(255,255,255,0.018)';
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x <= W; x += GRID) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-    for (let y = 0; y <= H; y += GRID) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-
-    // particles
-    particles = particles.filter(p => p.life > 0.05);
-    particles.forEach(p => {
-      p.x += p.vx; p.y += p.vy; p.vx *= 0.9; p.vy *= 0.9; p.life -= 0.07;
-      const radius = Math.max(0.1, p.r * p.life);
-      ctx.globalAlpha = Math.max(0, p.life);
-      ctx.fillStyle = '#c8a97e';
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-      ctx.fill();
-    });
-    ctx.globalAlpha = 1;
-
-    // food — glowing pulsing circle
-    const fp = Math.sin(food.pulse) * 0.3 + 0.7;
-    const fr = GRID / 2 - 2 + Math.sin(food.pulse) * 1.5;
-    const fx = food.x * GRID + GRID / 2;
-    const fy = food.y * GRID + GRID / 2;
-    const grd = ctx.createRadialGradient(fx, fy, 0, fx, fy, fr * 2.5);
-    grd.addColorStop(0, `rgba(200,169,126,${fp * 0.35})`);
-    grd.addColorStop(1, 'transparent');
-    ctx.fillStyle = grd;
-    ctx.beginPath();
-    ctx.arc(fx, fy, fr * 2.5, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = '#c8a97e';
-    ctx.beginPath();
-    ctx.arc(fx, fy, fr, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = 'rgba(255,240,210,0.7)';
-    ctx.beginPath();
-    ctx.arc(fx - fr * 0.3, fy - fr * 0.3, fr * 0.3, 0, Math.PI * 2);
-    ctx.fill();
-
-    // snake body — gradient segments
-    for (let i = snake.length - 1; i >= 1; i--) {
-      const t = 1 - i / snake.length;
-      const alpha = 0.25 + t * 0.55;
-      const green = Math.floor(60 + t * 30);
-      ctx.fillStyle = `rgba(40,${green},50,${alpha})`;
-      const seg = snake[i];
-      const pad = 3 + (1 - t) * 2;
-      ctx.beginPath();
-      ctx.roundRect(seg.x * GRID + pad, seg.y * GRID + pad, GRID - pad * 2, GRID - pad * 2, 4);
-      ctx.fill();
+  function drawSnakeGame() {
+    snakeGame.ctx.fillStyle = '#0a0a0a';
+    snakeGame.ctx.fillRect(0, 0, snakeGame.canvas.width, snakeGame.canvas.height);
+    
+    snakeGame.ctx.fillStyle = '#c8a97e';
+    for (let segment of snakeGame.snake) {
+      snakeGame.ctx.fillRect(segment.x * snakeGame.gridSize, segment.y * snakeGame.gridSize, snakeGame.gridSize - 2, snakeGame.gridSize - 2);
     }
-
-    // head — photo
-    const h = snake[0];
-    const cx = h.x * GRID + GRID / 2;
-    const cy = h.y * GRID + GRID / 2;
-    const r = GRID / 2 + 2;
-    const angle = Math.atan2(dir.y, dir.x) - Math.PI / 2;
-
-    // glow around head
-    const hgrd = ctx.createRadialGradient(cx, cy, r * 0.5, cx, cy, r * 2.5);
-    hgrd.addColorStop(0, 'rgba(200,169,126,0.15)');
-    hgrd.addColorStop(1, 'transparent');
-    ctx.fillStyle = hgrd;
-    ctx.beginPath();
-    ctx.arc(cx, cy, r * 2.5, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.save();
-    ctx.translate(cx, cy);
-    ctx.rotate(angle);
-    ctx.beginPath();
-    ctx.arc(0, 0, r, 0, Math.PI * 2);
-    ctx.clip();
-    if (headImg.complete && headImg.naturalWidth > 0) {
-      ctx.drawImage(headImg, -r, -r, r * 2, r * 2);
-    } else {
-      ctx.fillStyle = '#f0e8dc';
-      ctx.fill();
-    }
-    // subtle border
-    ctx.strokeStyle = 'rgba(200,169,126,0.5)';
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.restore();
+    
+    snakeGame.ctx.fillStyle = '#ff5f57';
+    snakeGame.ctx.fillRect(snakeGame.food.x * snakeGame.gridSize, snakeGame.food.y * snakeGame.gridSize, snakeGame.gridSize - 2, snakeGame.gridSize - 2);
   }
 
-  function handleKey(e) {
-    const map = {
-      ArrowUp:{x:0,y:-1}, ArrowDown:{x:0,y:1},
-      ArrowLeft:{x:-1,y:0}, ArrowRight:{x:1,y:0},
-      w:{x:0,y:-1}, s:{x:0,y:1}, a:{x:-1,y:0}, d:{x:1,y:0},
-      W:{x:0,y:-1}, S:{x:0,y:1}, A:{x:-1,y:0}, D:{x:1,y:0}
-    };
-    if (map[e.key]) {
-      const n = map[e.key];
-      if (n.x !== -dir.x || n.y !== -dir.y) nextDir = n;
-      e.preventDefault();
-    }
+  function endSnakeGame() {
+    snakeGame.gameRunning = false;
+    document.removeEventListener('keydown', handleSnakeInput);
+    document.getElementById('snake-game-area').style.display = 'none';
+    document.getElementById('snake-intro').style.display = 'block';
   }
 
-  function endSnake(ctx, GRID) {
-    clearInterval(snakeInterval);
-    snakeInterval = null;
-    gameRunning = false;
-    document.removeEventListener('keydown', handleKey);
-
-    const canvas = document.getElementById('snake-canvas');
-    ctx.fillStyle = 'rgba(180,40,40,0.25)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#ff7070';
-    ctx.font = 'bold 13px DM Mono, monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('you died. try again.', canvas.width / 2, canvas.height / 2);
-
-    setTimeout(() => {
-      document.getElementById('snake-game-area').style.display = 'none';
-      document.getElementById('snake-intro').style.display = 'block';
-    }, 1600);
-  }
-
-  function winSnake() {
+  function winSnakeGame() {
+    snakeGame.gameRunning = false;
+    document.removeEventListener('keydown', handleSnakeInput);
     document.getElementById('snake-game-area').style.display = 'none';
     document.getElementById('snake-win').style.display = 'block';
-    document.removeEventListener('keydown', handleKey);
   }
 
-  document.body.style.overflow = 'hidden';
-</script>
-
-  <!-- ─── THEME TOGGLE ─── -->
-  <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀️</button>
-
-  <!-- ─── THEME SCRIPT ─── -->
-  <script>
-    (function() {
-      const stored = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = stored || (prefersDark ? 'dark' : 'light');
-      if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
-      updateToggleIcon(theme);
-
-      function updateToggleIcon(t) {
-        const btn = document.getElementById('theme-toggle');
-        if (btn) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  // ─── SCROLL REVEAL ─── //
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('reveal');
       }
+    });
+  });
 
-      window.toggleTheme = function() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'light' ? 'dark' : 'light';
-        if (next === 'dark') {
-          document.documentElement.removeAttribute('data-theme');
-        } else {
-          document.documentElement.setAttribute('data-theme', 'light');
-        }
-        localStorage.setItem('theme', next);
-        updateToggleIcon(next);
-      };
-    })();
-  </script>
-
-  <!-- ─── NAV ─── -->
-  <nav>
-    <a class="nav-logo" href="#hero">A.Z.</a>
-    <ul class="nav-links">
-      <li><a href="#experience">Experience</a></li>
-      <li><a href="#education">Education</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#skills">Skills</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
-  </nav>
-
-  <!-- ─── HERO ─── -->
-  <section id="hero">
-    <div class="hero-bg-line"></div>
-    <div class="hero-number">A</div>
-
-    <div class="hero-content">
-      <p class="hero-eyebrow">Business Analytics · Strategy · Data</p>
-
-      <h1 class="hero-name">
-        Angelina<br>
-        <em>Zapototskaia</em>
-      </h1>
-
-      <p class="hero-desc">
-        UCL MSc Business Analytics. I build analytical tools that get used — from commercial ML models for demand estimation at a UK leisure consultancy, to causal inference, marketing ROI analysis, and federal grant proposals that scaled to 7,000 people.
-      </p>
-
-      <div class="hero-tags">
-        <span class="tag accent">UCL MSc 2025–26</span>
-        <span class="tag">Python · R · Power BI</span>
-      </div>
-
-      <div class="hero-links">
-        <a class="btn btn-primary" href="mailto:angelinaz115@icloud.com">Get in Touch</a>
-        <a class="btn btn-outline" href="https://linkedin.com/in/zarazzap" target="_blank">LinkedIn</a>
-      </div>
-    </div>
-
-    <div class="hero-right">
-      <div class="stat-box">
-        <div class="stat-num">7K+</div>
-        <div class="stat-label">Participants scaled</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num">100%</div>
-        <div class="stat-label">Grant success rate</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num">300+</div>
-        <div class="stat-label">Team members led</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num">10K+</div>
-        <div class="stat-label">Annual participants</div>
-      </div>
-      <div class="hero-location">
-        <span class="loc-dot"></span>
-        London, UK · Open to opportunities
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── EXPERIENCE ─── -->
-  <section id="experience">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <h2 class="section-title">Experience</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="exp-item reveal">
-      <div class="exp-meta">
-        <div class="exp-period">2026</div>
-        <div class="exp-org">EVOLVE / LeisureDB<br>London, UK</div>
-      </div>
-      <div class="exp-body">
-        <h3 class="exp-role">Business Analytics & Data Science</h3>
-        <ul class="exp-highlights">
-          <li>Built a 1,029-record site-level modelling dataset from fragmented facility reports, site records, and legacy consultant data — standardising definitions and engineering 30 predictor variables across facility, demographic and competition dimensions.</li>
-          <li>Tested supervised ML models to predict latent leisure demand; strongest model (Extra Trees) reduced MAE by ~27% versus baseline (R² ≈ 0.38).</li>
-          <li>Assessed predictor coverage and data quality risks systematically, separating usable from unreliable variables and documenting where missingness created modelling risk.</li>
-          <li>Framed outputs as decision-support benchmarking rather than automation — making results commercially usable for investment and planning decisions.</li>
-          <li>Designed a follow-on Mosaic-based clustering methodology to complement direct prediction for new or data-sparse sites.</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="exp-item reveal">
-      <div class="exp-meta">
-        <div class="exp-period">2021 – 2023</div>
-        <div class="exp-org">MGIMO University<br>Moscow, Russia</div>
-      </div>
-      <div class="exp-body">
-        <h3 class="exp-role">Project Manager & Coordinator</h3>
-        <ul class="exp-highlights">
-          <li>Scaled 6 flagship projects to over 7,000 participants by securing inclusion in Russia's national "Priority-2030" innovation programme through evidence-based proposals and federal approval.</li>
-          <li>Managed cross-functional teams of 300+ members and £30K+ budgets; designed operating models and KPIs later adopted organisation-wide.</li>
-          <li>Authored grant requests to Federal Agencies with a 100% success rate.</li>
-          <li>Produced data-driven reports (3–40 pages), dashboards, and briefings for senior management; built Excel models converting multi-thousand survey entries into quantitative metrics.</li>
-          <li>Led the largest educational model event in the CIS: 2,200 participants across 10 countries, including a state-accredited professional development programme.</li>
-          <li>Created international youth forums, business simulators, and financial literacy initiatives supported by Debevoise&Plimpton, EY, BCG, and government ministries — attracting 10K+ participants annually and still running.</li>
-          <li>Public speaking and event moderation for audiences of 2,000+, at national and international levels.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── EDUCATION ─── -->
-  <section id="education">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <h2 class="section-title">Education</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="edu-grid">
-      <div class="edu-card reveal">
-        <div class="edu-year">2025 – 2026</div>
-        <div class="edu-degree">MSc Business Analytics</div>
-        <div class="edu-school">University College London, UK</div>
-        <div class="edu-detail">Data Visualisation · Machine Learning · Strategy & Analytics</div>
-      </div>
-
-      <div class="edu-card reveal">
-        <div class="edu-year">2023 – 2025</div>
-        <div class="edu-degree">BA Business Management</div>
-        <div class="edu-school">University of East Anglia, UK</div>
-        <div class="edu-detail">Dissertation: "Financial Risk Mitigation for Strategic Project Management"</div>
-      </div>
-
-      <div class="edu-card reveal">
-        <div class="edu-year">2020 – 2023</div>
-        <div class="edu-degree">LLB International Law</div>
-        <div class="edu-school">Moscow State Institute of International Relations, Russia</div>
-        <div class="edu-detail">Anglo-Saxon Law · Civil Law · Financial Law</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── PROJECTS & RESEARCH ─── -->
-  <section id="projects">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <h2 class="section-title">Projects & Research</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="projects-list">
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">VIX Volatility Regime Forecasting</div>
-          <a class="project-link" href="https://github.com/zarazzap/vix-regime-forecasting" target="_blank">View on GitHub →</a>
-          <a class="project-link-secondary" href="VIX_time_series_forecasting.pdf" target="_blank">Read Report →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">End-to-end ML classification project predicting next-day VIX volatility regimes (Low / Medium / High) from 9,110 trading days of CBOE data. Engineered nine leakage-free features from VIX close prices, applied a strict chronological train/validation/test split, and benchmarked five models — logistic regression, random forest, XGBoost, MLP, and a PyTorch deep network — against a persistence baseline. The core finding was a rigorous null result: VIX regime persistence is so structurally strong (lag-1 autocorrelation > 0.98) that no model achieves a statistically significant improvement over simply carrying forward today's regime (McNemar p = 0.85). The project demonstrates that the options-implied nature of VIX sets an informational ceiling that univariate features alone cannot overcome.</p>
-          <div class="project-tags">
-            <span class="project-tag">Python</span>
-            <span class="project-tag">scikit-learn</span>
-            <span class="project-tag">XGBoost</span>
-            <span class="project-tag">PyTorch</span>
-            <span class="project-tag">Time Series</span>
-            <span class="project-tag">Statistical Testing</span>
-            <span class="project-tag">Financial Analytics</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Organisational Network Analysis</div>
-          <a class="project-link" href="Network_analysis.pdf" target="_blank">Read Report →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Case study analysis of a fictional 28-employee London consultancy (IdeaWeb). Computed degree, closeness, betweenness, and eigenvector centrality across a formal collaboration network — identifying the group head as the critical bottleneck (betweenness = 0.467) despite having fewer direct connections than team leads. Proposed an evidence-based floor allocation minimising severed formal ties. Then diagnosed why client satisfaction declined post-move by analysing a parallel informal lunch network: the formal-network-based split had severed key informal ties driving creative performance. Applied community detection to propose a revised split preserving those connections. Finally, interpreted a multivariate OLS regression on 438 employees across 16 global offices — finding formal betweenness the strongest predictor of promotion (+11.3pp per SD), informal degree the strongest protective factor against negative reviews, and a 12pp female promotion deficit that exceeded every network coefficient in magnitude.</p>
-          <div class="project-tags">
-            <span class="project-tag">R</span>
-            <span class="project-tag">Network Analysis</span>
-            <span class="project-tag">Centrality Metrics</span>
-            <span class="project-tag">Community Detection</span>
-            <span class="project-tag">OLS Regression</span>
-            <span class="project-tag">Data Visualisation</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Causal Inference, Pricing & Targeting in E-Commerce</div>
-          <a class="project-link" href="marketing_analytics.pdf" target="_blank">Part I: Pricing & Causal Inference →</a>
-          <a class="project-link-secondary" href="causal_inference_targeting.pdf" target="_blank">Part II: Segmentation & Targeting →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Two-part quantitative project on causal reasoning and predictive targeting using real e-commerce sales data. Part I built a marketing mix model, diagnosed endogeneity in price estimation, and applied Instrumental Variables to recover a clean causal price effect — correcting the bias in a naive OLS estimate. Also designed an A/B/N experiment and proposed a Regression Discontinuity Design to isolate the causal impact of star ratings on sales. Part II applied RFM segmentation, K-means clustering, and supervised learning models (decision tree, random forest) to identify high-value customer segments and optimise targeting ROI — improving campaign return from −22% (blanket) to +40% (targeted).</p>
-          <div class="project-tags">
-            <span class="project-tag">R</span>
-            <span class="project-tag">Causal Inference</span>
-            <span class="project-tag">Instrumental Variables</span>
-            <span class="project-tag">RFM Segmentation</span>
-            <span class="project-tag">Machine Learning</span>
-            <span class="project-tag">A/B Testing</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Sustainability Analytics & OPEX Regression</div>
-          <a class="project-link" href="Stats_analysis_report.pdf" target="_blank">Read Report →</a>
-          <a class="project-link-secondary" href="Stats_analysis.xlsx" target="_blank">View Excel →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Case study statistical analysis of 200 European firms across Construction, Manufacturing, and Transportation to understand OPEX drivers and evaluate whether sustainability initiatives aligned with environmental performance. Applied chi-square tests and Welch t-tests to assess whether green programme participation correlated with recycling outcomes — finding no statistically significant association before controlling for firm size. Built a log-log OLS regression (R² = 0.89) with employment, CAPEX, and sustainability investment elasticities, sector fixed effects, and full diagnostics: Shapiro-Wilk, Breusch-Pagan, VIF, Cook's distance, and HC1 robust standard errors as a robustness check. Key finding: sustainability investment reduces OPEX with elasticity −0.47 (p < 0.001); programme participation has no significant conditional effect — diagnosing a design gap rather than a data gap.</p>
-          <div class="project-tags">
-            <span class="project-tag">R</span>
-            <span class="project-tag">OLS Regression</span>
-            <span class="project-tag">Hypothesis Testing</span>
-            <span class="project-tag">Diagnostic Testing</span>
-            <span class="project-tag">Robust Standard Errors</span>
-            <span class="project-tag">Sector Fixed Effects</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Warner Bros. Discovery: Strategic Analysis & Deleveraging Proposal</div>
-          <a class="project-link" href="wbd_strategy.pdf" target="_blank">Read Report →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Strategic analysis of Warner Bros. Discovery's financial and competitive position, focused on a $38bn debt burden and the structural decline of linear TV revenue. Produced original data visualisations of segment performance and competitor benchmarking, and ran a cross-sectional regression on peer valuation multiples — quantifying the market penalty for leverage. Proposed an integrated deleveraging strategy over a split or full sale, with two modelled divestiture scenarios. Responsible for all data analysis, visualisations, and quantitative modelling.</p>
-          <div class="project-tags">
-            <span class="project-tag">R</span>
-            <span class="project-tag">Strategy</span>
-            <span class="project-tag">Financial Analysis</span>
-            <span class="project-tag">Regression</span>
-            <span class="project-tag">Data Visualisation</span>
-            <span class="project-tag">M&A</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Marketing Analytics: Customer Segmentation & CLV Modelling</div>
-          <a class="project-link" href="marketing_analytics_clv.pdf" target="_blank">View Project →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Full-cycle marketing analytics project in R, covering market analysis, channel evaluation, and customer lifetime value modelling. Compared acquisition channels by cost-efficiency, built behavioural customer segments, and computed 24-month CLV with retention decay and discounting. Concluded with a data-driven recommendation on loyalty programme viability — modelling the trade-off between retention uplift and incentive cost and recommending against launch on profitability grounds.</p>
-          <div class="project-tags">
-            <span class="project-tag">R</span>
-            <span class="project-tag">CLV Modelling</span>
-            <span class="project-tag">Customer Segmentation</span>
-            <span class="project-tag">Marketing Analytics</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="project-item reveal">
-        <div class="project-left">
-          <div class="project-title">Financial Risk Mitigation for Strategic Project Management</div>
-          <a class="project-link" href="Financial risks in SPM Dissertation.pdf" target="_blank">Read Dissertation →</a>
-        </div>
-        <div class="project-right">
-          <p class="project-desc">Dissertation examining how organisations can identify and mitigate financial risks across complex, multi-stage projects. Developed a structured risk mitigation framework grounded in financial theory and applied to strategic project contexts, with practical recommendations for decision-makers managing large-scale initiatives under uncertainty.</p>
-          <div class="project-tags">
-            <span class="project-tag">Financial Risk</span>
-            <span class="project-tag">Strategy</span>
-            <span class="project-tag">Project Management</span>
-            <span class="project-tag">Research</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ─── SKILLS ─── -->
-  <section id="skills">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <h2 class="section-title">Skills</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="skills-layout">
-      <div class="skills-intro reveal">
-        From large-scale project management to machine learning — strategy, data, and execution in one place.
-      </div>
-
-      <div class="skills-groups">
-        <div class="reveal">
-          <div class="skill-group-label">Technical</div>
-          <div class="skill-pills">
-            <span class="pill">Python</span>
-            <span class="pill">R</span>
-            <span class="pill">SQL</span>
-            <span class="pill">VBA</span>
-            <span class="pill">Power BI</span>
-            <span class="pill">Tableau</span>
-            <span class="pill">Excel (Advanced)</span>
-            <span class="pill">Power Query</span>
-            <span class="pill">Microsoft Office</span>
-          </div>
-        </div>
-
-        <div class="reveal">
-          <div class="skill-group-label">Data & Analytics</div>
-          <div class="skill-pills">
-            <span class="pill">Data Visualisation</span>
-            <span class="pill">Statistical Analysis</span>
-            <span class="pill">Machine Learning</span>
-            <span class="pill">Predictive Analytics</span>
-            <span class="pill">Financial Modeling</span>
-            <span class="pill">Data Engineering</span>
-            <span class="pill">Time Series Analysis</span>
-            <span class="pill">Regression Analysis</span>
-            <span class="pill">Quantitative Modelling</span>
-          </div>
-        </div>
-
-        <div class="reveal">
-          <div class="skill-group-label">Business & Project Management</div>
-          <div class="skill-pills">
-            <span class="pill">Project Management</span>
-            <span class="pill">Strategic Planning</span>
-            <span class="pill">Business Development</span>
-            <span class="pill">Budget Management</span>
-            <span class="pill">KPI Design</span>
-            <span class="pill">Grant Writing</span>
-            <span class="pill">Stakeholder Reporting</span>
-            <span class="pill">Oracle (Advanced)</span>
-            <span class="pill">JIRA (Advanced)</span>
-            <span class="pill">Public Speaking</span>
-          </div>
-        </div>
-
-        <div class="reveal">
-          <div class="skill-group-label">Languages</div>
-          <div class="lang-bar-wrap">
-            <div class="lang-row">
-              <div class="lang-meta">
-                <span class="lang-name">Russian</span>
-                <span class="lang-level">Native</span>
-              </div>
-              <div class="lang-track"><div class="lang-fill" style="width:100%"></div></div>
-            </div>
-            <div class="lang-row">
-              <div class="lang-meta">
-                <span class="lang-name">English</span>
-                <span class="lang-level">C2 — Proficient</span>
-              </div>
-              <div class="lang-track"><div class="lang-fill" style="width:95%"></div></div>
-            </div>
-            <div class="lang-row">
-              <div class="lang-meta">
-                <span class="lang-name">Spanish</span>
-                <span class="lang-level">B1 — Intermediate</span>
-              </div>
-              <div class="lang-track"><div class="lang-fill" style="width:55%"></div></div>
-            </div>
-            <div class="lang-row">
-              <div class="lang-meta">
-                <span class="lang-name">German</span>
-                <span class="lang-level">A2 — Beginner</span>
-              </div>
-              <div class="lang-track"><div class="lang-fill" style="width:25%"></div></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Certifications -->
-    <div style="margin-top: 4rem;">
-      <div class="skill-group-label" style="margin-bottom: 1rem;">Certifications</div>
-      <div class="certs-list">
-        <div class="cert-item reveal">
-          <div class="cert-icon">🏛</div>
-          <div class="cert-name">Foundations of Finance</div>
-          <div class="cert-issuer">University of Cambridge ICE</div>
-        </div>
-        <div class="cert-item reveal">
-          <div class="cert-icon">📊</div>
-          <div class="cert-name">Data Analysis Essentials</div>
-          <div class="cert-issuer">ImperialBusinessX</div>
-        </div>
-        <div class="cert-item reveal">
-          <div class="cert-icon">🐍</div>
-          <div class="cert-name">Data Analysis with Python</div>
-          <div class="cert-issuer">IBM</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── LEADERSHIP & EXTRAS ─── -->
-  <section id="extras">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <h2 class="section-title">Leadership & Beyond</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="extras-grid">
-      <div class="extra-box reveal">
-        <div class="extra-box-title">Leadership</div>
-        <p>Vice President of the MGIMO Law Club, overseeing 100+ projects per year. Equality & Diversity Officer at UEA CIS Society. Delegate co-organiser and moderator at SPIEF-2022.</p>
-      </div>
-      <div class="extra-box reveal">
-        <div class="extra-box-title">Volunteering</div>
-        <p>Delivered a cycle of financial literacy lectures for children in orphanages — turning professional knowledge into accessible education for those who need it most.</p>
-      </div>
-      <div class="extra-box reveal">
-        <div class="extra-box-title">Investing</div>
-        <p>Actively manages a personal investment portfolio of 10 equities and 35 crypto assets — applying data analysis to real-world financial decision-making.</p>
-      </div>
-      <div class="extra-box reveal">
-        <div class="extra-box-title">Hobbies</div>
-        <p>Baking and video games — a balance of precision and creativity that mirrors an approach to problem-solving: structured thinking with room for imagination.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ─── CONTACT ─── -->
-  <section id="contact">
-    <h2 class="contact-heading">Let's <em>connect</em></h2>
-    <p class="contact-sub">Based in London · Open to analytics, data science, and strategy roles</p>
-
-    <div class="contact-links">
-      <a class="contact-link" href="mailto:angelinaz115@icloud.com">
-        <span>✉</span> angelinaz115@icloud.com
-      </a>
-      <a class="contact-link" href="https://linkedin.com/in/zarazzap" target="_blank">
-        <span>↗</span> LinkedIn
-      </a>
-    </div>
-  </section>
-
-  <!-- ─── FOOTER ─── -->
-  <footer>
-    <div class="footer-text">© 2026 Angelina Zapototskaia</div>
-    <div class="footer-right">
-      <a href="#hero">Back to top ↑</a>
-    </div>
-  </footer>
-
-  <!-- ─── SCROLL REVEAL ─── -->
-  <script>
-    const els = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver(entries => {
-        entries.forEach(e => { if (e.isIntersecting) { e.target.style.animationPlayState = 'running'; } });
-      }, { threshold: 0.05 });
-      els.forEach(el => io.observe(el));
-    }
-  </script>
+  document.querySelectorAll('section, .project-item').forEach(el => observer.observe(el));
+</script>
 
 </body>
 </html>
